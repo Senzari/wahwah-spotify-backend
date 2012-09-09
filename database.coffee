@@ -49,7 +49,7 @@ module.exports = (options) ->
 
   # sync schema to database
   database.client
-    .sync()
+    .sync({force:true})
     .error (error) ->
       console.log error
     .success () ->
