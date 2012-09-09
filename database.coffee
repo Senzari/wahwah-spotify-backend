@@ -10,9 +10,10 @@ module.exports = (options) ->
   database.client = new Sequelize options.shema, options.user, options.password,
     host: options.host
     port: options.port
-    logging: options.logging
+    protocol: 'postgres'
     dialect: 'postgres'
     maxConcurrentQueries: 100
+    logging: options.logging
 
   # load models from the models directory 
   database.models = 
