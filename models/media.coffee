@@ -1,0 +1,39 @@
+module.exports = (Sequelize, DataTypes) ->
+  Sequelize.define "Media",
+    public_id:
+      type: DataTypes.STRING
+      allowNull: false
+      validate:
+        isAlphamuneric: true
+    resource_type:
+      type: DataTypes.STRING
+      allowNull: false
+      validate: 
+        whichType: (val) ->
+          allowed = ['image', 'video']
+          unless val in allowed
+            throw new Error("Media Error - only #{allowed.join(', ')} media content allowed!")
+    url:
+      type: DataTypes.STRING
+      allowNull: false
+      validate:
+        isUrl: true
+    format:
+      type: DataTypes.STRING
+      allowNull: true
+      validate:
+        whichFormat: (val) ->
+          allowed = ['jpg', 'jpeg', 'png', 'gif']
+          unless val in allowed
+            throw new Error("Media Error - only #{allowed.join(', ')} images are allowed!") 
+    category:
+      type: DataTypes.STRING
+      allowNull: false
+      validate: 
+        whichCategory: (val) ->
+          allowed = ['profile', 'channel']
+          unless val in allowed
+            throw new Error("Media Error - only media for users #{allowed.join(', ')} is allowed!")
+  ,
+    underscored: true
+    paranoid: false
