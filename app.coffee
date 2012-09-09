@@ -11,6 +11,8 @@ Load the Config file
 ###
 
 global.config = require('./config')
+console.log process.env.NODE_ENV
+console.log global.config
 
 ###
 Express configuration
