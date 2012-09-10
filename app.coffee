@@ -41,6 +41,12 @@ app.configure 'production', ->
   config.db_options.logging = false
 
 ###
+Models
+###
+
+global.db = require('./database')(config.db_options)
+
+###
 Passport Configuration
 ###
 
@@ -54,11 +60,12 @@ passport.use new Strategy
     console.log profile
     done null, true
 
-###
-Models
-###
+passport.serializeUser (user, done) ->
+  done null, user.id
 
-global.db = require('./database')(config.db_options)
+passport.deserializeUser (id, done) ->
+  db.models.User.find(123).done (err, res) ->
+    done err, res
 
 ###
 Routes
