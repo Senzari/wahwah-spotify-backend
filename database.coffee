@@ -50,7 +50,7 @@ module.exports = (options) ->
 
   # sync schema to database
   database.client
-    .sync({force:true})
+    .sync({force: true})
     .error (error) ->
       console.log error
     .success () ->
