@@ -1,10 +1,12 @@
 ###
 Module dependencies.
 ###
+_         = require 'underscore'
+async     = require 'async'
 express   = require 'express'
 http      = require 'http'
+moniker   = require 'moniker'
 passport  = require 'passport'
-Strategy  = require('passport-facebook').Strategy
 app       = module.exports = express()
 server    = http.createServer app
 
@@ -25,7 +27,7 @@ Express configuration
 
 app.configure -> 
   app.use express.cookieParser()
-  app.use express.session { secret: 'mr scott' }
+  app.use express.session({secret: 'mr scott'})
   app.use express.bodyParser()
   app.use express.methodOverride()
   app.use passport.initialize()
@@ -47,25 +49,10 @@ Models
 global.db = require('./database')(config.db_options)
 
 ###
-Passport Configuration
+Passport 
 ###
 
-passport.use new Strategy 
-    clientID: config.fb_options.client_id
-    clientSecret: config.fb_options.client_secret
-    callbackURL: 'http://wahwah-spotify.herokuapp.com/api/auth/callback/'
-  , (accessToken, refreshToken, profile, done) ->
-    console.log accessToken
-    console.log refreshToken
-    console.log profile
-    done null, true
-
-passport.serializeUser (user, done) ->
-  done null, user.id
-
-passport.deserializeUser (id, done) ->
-  db.models.User.find(123).done (err, res) ->
-    done err, res
+require('./passport')
 
 ###
 Routes
@@ -74,9 +61,9 @@ Routes
 routes = require('./routes')(app)
 
 ###
-Http Server
+Start up the Http Server
 ###
 
-if !module.parent
+unless module.parent
   server.listen process.env.PORT or 3000
   console.log "Express listening on port #{server.address().port}"

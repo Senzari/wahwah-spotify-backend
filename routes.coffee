@@ -8,7 +8,7 @@ module.exports = (app) ->
   app.get '/', (req, resp) -> resp.send 'Welcome to the WahWah.fm Backbone!'
  
   # Routing for Channels
-  app.get     '/api/channels', Channels.index
+  app.get     '/api/channels', passport.isAuthenticated, Channels.index
   app.post    '/api/channels', Channels.create
   app.get     '/api/channels/:uuid/:id', Channels.show
   app.put     '/api/channels/:uuid/:id', Channels.update
@@ -21,9 +21,17 @@ module.exports = (app) ->
   app.delete  '/api/users/:uuid', Users.destroy
 
   # Users Authentification
-  app.get     '/api/auth/login', passport.authenticate('facebook', { scope: ['user_status', 'user_photos'] })
-  app.get     '/api/auth/logout', (req, resp) -> req.logOut()
-  app.get     '/api/auth/callback', passport.authenticate 'facebook'
+  # app.get     '/api/auth/login', passport.authenticate 'facebook', { scope: ['user_status', 'user_photos'] }
+  app.get     '/api/auth/login', (req, resp, next) ->
+    req.session.passport.uuid = req.query.uuid
+    passport.authenticate('facebook', { scope: ['user_status', 'user_photos'] })(req, resp, next)
+
+  app.get     '/api/auth/logout', (req, resp) -> 
+    req.logOut() 
+    resp.json message: 'see you, byebye!'
+
+  app.get     '/api/auth/callback', (req, resp, next) -> 
+    passport.authenticate( 'facebook', { successRedirect: '/' })(req, resp, next)
 
   # Tests
   Tests       = require('./controllers/tests.coffee')(app)

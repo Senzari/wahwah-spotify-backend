@@ -21,7 +21,7 @@ module.exports = (Sequelize, DataTypes) ->
     username:
       type: DataTypes.STRING 
       allowNull: false
-      unique: true
+      #unique: true
     email:
       type: DataTypes.STRING 
       allowNull: true
@@ -32,16 +32,23 @@ module.exports = (Sequelize, DataTypes) ->
       allowNull: true
       validate:
         len: 5
+    timezone:
+      type: DataTypes.INTEGER
     website:
       type: DataTypes.STRING
       allowNull: true
       validate:
         isUrl: true
-    twitter:
+    profile_url:
       type: DataTypes.STRING
       allowNull: true
       validate:
-        isAlphanumeric: true
+        isUrl: true
+    twitter_url:
+      type: DataTypes.STRING
+      allowNull: true
+      validate:
+        isUrl: true
     active:
       type: DataTypes.BOOLEAN
       allowNull: false

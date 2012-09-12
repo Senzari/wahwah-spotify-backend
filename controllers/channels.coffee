@@ -4,30 +4,19 @@ class Channels
   constructor: (@app) -> 
 
   index: (req, resp) ->
-    db.models.User
-      .build 
-        spotify_id: 'testid5'
-        active: true
-      .save()
-      .success (acc) ->
-        console.log acc 
+    db.models.Channel
+      .findAll
+        limit: 10
+      .done (err, channels) ->
+        console.log channels 
+        console.log req.user
+
     resp.json {hello:'test'}
 
   show: (req, resp) ->
-    db.models.User
-      .findAll
-        limit: 10
-        attributes: ['id', 'spotify_id']
-      .success (accounts) ->
-        resp.json accounts
+
 
   insert: (req, resp) ->
-    db.models.User
-      .findAll
-        limit: 10
-        attributes: ['id', 'spotify_id']
-      .success (accounts) ->
-        resp.json accounts
 
 
     #resp.send("test show")
