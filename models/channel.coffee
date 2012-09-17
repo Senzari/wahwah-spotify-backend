@@ -1,16 +1,11 @@
 module.exports = (Sequelize, DataTypes) ->
   Sequelize.define "Channel",
-    hash:
-      type: DataTypes.STRING
-      allowNull: true
-      validate:
-        isAlphanumeric: true
-        max: 64
     name:
       type: DataTypes.STRING
-      allowNull: true
+      allowNull: false
       validate:
         max: 64
+        notNull: true
     status_message: 
       type: DataTypes.TEXT
       allowNull: true
@@ -20,6 +15,8 @@ module.exports = (Sequelize, DataTypes) ->
       type: DataTypes.BOOLEAN
       allowNull: false
       defaultValue: false
+      validate:
+        notNull: true
   ,
     underscored: true
     paranoid: true

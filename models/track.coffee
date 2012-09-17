@@ -5,7 +5,14 @@ module.exports = (Sequelize, DataTypes) ->
       allowNull: false
       validate:
         contains: "spotify:track"
+        notNull: true
     name:
+      type: DataTypes.TEXT
+      allowNull: false
+      validate:
+        notNull: true
+        max: 1024
+    album:
       type: DataTypes.TEXT
       allowNull: true
       validate:

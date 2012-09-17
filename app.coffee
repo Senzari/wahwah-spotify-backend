@@ -1,12 +1,13 @@
 ###
 Module dependencies.
 ###
-_         = require 'underscore'
-async     = require 'async'
-express   = require 'express'
-http      = require 'http'
-moniker   = require 'moniker'
-passport  = require 'passport'
+_         = require('underscore')
+async     = require('async')
+express   = require('express')
+http      = require('http')
+moniker   = require('moniker')
+passport  = require('passport')
+hashids   = require('hashids')
 app       = module.exports = express()
 server    = http.createServer app
 
@@ -27,7 +28,7 @@ Express configuration
 
 app.configure -> 
   app.use express.cookieParser()
-  app.use express.session({secret: 'mr scott'})
+  app.use express.session({secret: config.app.hash_salt})
   app.use express.bodyParser()
   app.use express.methodOverride()
   app.use passport.initialize()
@@ -36,17 +37,26 @@ app.configure ->
 
 app.configure 'development', ->
   app.use express.errorHandler dumpExceptions: true, showStack: true 
-  config.db_options.logging = console.log
+  config.db.logging = console.log
 
 app.configure 'production', ->
   app.use express.errorHandler
-  config.db_options.logging = false
+  config.db.logging = false
+
+app.locals
+  hashes: new hashids config.app.hash_salt, 12
 
 ###
 Models
 ###
 
-global.db = require('./database')(config.db_options)
+global.db = require('./database')
+
+###
+SendGrid Emails 
+###
+
+global.sendmail = require('./sendmail')
 
 ###
 Passport 

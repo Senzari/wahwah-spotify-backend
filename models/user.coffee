@@ -1,26 +1,28 @@
 module.exports = (Sequelize, DataTypes) ->
   Sequelize.define "User",
-    spotify_id:
-      type: DataTypes.STRING
-      allowNull: false
-      unique: true
-      validate: 
-        isAlphanumeric: true
     facebook_id:
       type: DataTypes.STRING
       allowNull: false
       unique: true
       validate: 
         isAlphanumeric: true
+        notNull: true
     firstname: 
       type: DataTypes.STRING 
       allowNull: true
+      validate:
+        max: 255
     lastname:
       type: DataTypes.STRING 
       allowNull: true
+      validate:
+        max: 255
     username:
       type: DataTypes.STRING 
       allowNull: false
+      validate:
+        max: 128
+        notNull: true
       #unique: true
     email:
       type: DataTypes.STRING 
@@ -34,6 +36,8 @@ module.exports = (Sequelize, DataTypes) ->
         len: 5
     timezone:
       type: DataTypes.INTEGER
+      validate:
+        isInt: true
     website:
       type: DataTypes.STRING
       allowNull: true
@@ -53,6 +57,8 @@ module.exports = (Sequelize, DataTypes) ->
       type: DataTypes.BOOLEAN
       allowNull: false
       defaultValue: false
+      validate:
+        notNull: true
   ,
     underscored: true
     paranoid: true

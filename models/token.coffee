@@ -9,6 +9,7 @@ module.exports = (Sequelize, DataTypes) ->
       type: DataTypes.STRING
       allowNull: false
       validate: 
+        notNull: true
         whichProvider: (val) ->
           allowed = ['facebook', 'twitter']
           unless val in allowed

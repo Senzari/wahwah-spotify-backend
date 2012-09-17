@@ -6,41 +6,30 @@ _       = require 'underscore'
 class Auth 
   constructor: (@app) -> 
 
-  index: (req, resp) ->
-    resp.send 'Auth.index: ' + util.inspect req.query
+  client: (req, resp, next) ->
+    db.models.Client
+      .findOrCreate 
+        client_id: req.body.client_id 
+      , 
+        client: 'spotify_app'
+        client_id: req.body.client_id 
+      .done (err, client) ->
+        unless err
+          req.session.client = client
+          resp.send 200
+        else 
+          resp.json 500, message: err
 
-  login: (req, resp) ->
-    graph.setAccessToken req.query.token
+  login: (req, resp, next) ->
+    req.session.passport.uuid = req.query.uuid
+    passport.authenticate('facebook', { scope: ['user_status', 'user_photos'] })(req, resp, next)
 
-    async.waterfall [
-      (cb) ->
-        query = 'SELECT uid, website, first_name, last_name, username, email, locale FROM user WHERE uid = me()'
-        graph.fql query, (err, res) ->
-          cb err, res
-      (res, cb) ->
-        fb =  _.first(res.data)
-        db.models.User
-          .create 
-            spotify_id:   req.query.uuid
-            facebook_id:  fb.uid
-            firstname:    fb.first_name
-            lastname:     fb.last_name
-            username:     fb.username
-            email:        fb.email
-            locale:       fb.locale
-            website:      fb.website
-          .done (err, res) ->
-            cb err, res
-    ], 
-    (err, res) ->
-      console.log err
-      console.log res
+  logout: (req, resp, next) ->
+    req.logOut() 
+    resp.json message: 'see you, byebye!'
 
-  logout: (req, resp) ->
-    resp.send 'Auth.logout'
-
-  callback: (req, resp) ->
-    resp.send 'Auth.callback'
+  callback: (req, resp, next) ->
+    passport.authenticate( 'facebook', { successRedirect: '/' })(req, resp, next)
 
 
 module.exports = (app) -> new Auth(app)

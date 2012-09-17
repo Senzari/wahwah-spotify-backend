@@ -8,46 +8,60 @@ class Users
   constructor: (@app) -> 
 
   index: (req, resp) ->
-    resp.send 'Users.index: ' + util.inspect req.query
+    # implement pagination - https://gist.github.com/926857
+    db.models.User
+      .findAll
+        offset: 0
+        limit: 20
+      .done (err, users) ->
+        unless err
+          resp.json users
+        else 
+          resp.json 500, message: err
 
-  create: (req, resp) ->
-    graph.setAccessToken req.body.token
-
+  show: (req, resp) ->
     async.waterfall [
       (cb) ->
-        query = 'SELECT uid, website, first_name, last_name, username, email, locale FROM user WHERE uid = me()'
-        graph.fql query, (err, res) ->
-          cb err, res
-      (res, cb) ->
-        fb =  _.first(res.data)
         db.models.User
-          .create 
-            spotify_id:   req.body.uuid
-            facebook_id:  fb.uid
-            firstname:    fb.first_name
-            lastname:     fb.last_name
-            username:     fb.username or moniker.choose()
-            email:        fb.email
-            locale:       fb.locale
-            website:      fb.website
-          .done (err, res) ->
-            cb err, res
-    ], 
-    (err, res) ->
-      console.log err
-      console.log res
+          .find 
+            where: { spotify_id: req.params.uuid }
+            attributes: ['id','spotify_id', 'username', 'locale', 'timezone', 'website', 'profile_url', 'twitter_url']
+          .done (err, user) ->
+            cb err, user
+      (user, cb) ->
+        db.models.Media
+          .find
+            where: { user_id: user.id }
+          .done (err, media) ->
+            user.media = media
+            cb err, user
+    ],
+    (err, user) ->
+      unless err
+        resp.json user
+      else
+        resp.json 500, message: err
+
+
 
   update: (req, resp) ->
-    resp.send 'Users.update'
+    unless req.user.spotify_id is req.param.uuid
+      return req.json 403, message: 'you are not authorized for this!'
 
-  login: (req, resp) ->
-    resp.send 'Users.login'
-
-  logout: (req, resp) ->
-    resp.send 'Users.logout'
+    req.user.username = req.body.username
+    req.user.email = req.body.email 
+    req.user.validate()
+    req.user
+      .save()
+      .done (err, user) ->
+        unless err
+          resp.send 204
+        else 
+          resp.json 500, message: err
 
   destroy: (req, resp) ->
-    resp.send 'Users.destroy'
+    req.user.destroy()
+    resp.json message: 'success'
 
 
 module.exports = (app) -> new Users(app)

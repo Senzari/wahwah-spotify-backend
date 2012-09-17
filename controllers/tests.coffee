@@ -23,5 +23,20 @@ class Tests
       .createReadStream(req.files.image.path, {encoding: 'binary'})
       .on('data', stream.write)
       .on('end', stream.end)
- 
+
+  sendmail: (req, resp, next) ->
+    sendmail.send
+      to: 'andreas@invertednothing.com'
+      from: 'test@wahwah.fm'
+      subject: 'hello world'
+      text: req.query.text
+    , 
+      (success, message) ->
+        console.log success
+        console.log message
+        if success
+          resp.send 'worked!'
+        else 
+          resp.send 500, 'fuck!'
+          
 module.exports = (app) -> new Tests(app)

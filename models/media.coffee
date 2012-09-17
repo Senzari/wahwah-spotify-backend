@@ -5,10 +5,12 @@ module.exports = (Sequelize, DataTypes) ->
       allowNull: false
       validate:
         isAlphamuneric: true
+        notNull: true
     resource_type:
       type: DataTypes.STRING
       allowNull: false
       validate: 
+        notNull: true
         whichType: (val) ->
           allowed = ['image', 'video']
           unless val in allowed
@@ -17,6 +19,7 @@ module.exports = (Sequelize, DataTypes) ->
       type: DataTypes.STRING
       allowNull: false
       validate:
+        notNull: true
         isUrl: true
     format:
       type: DataTypes.STRING
@@ -30,6 +33,7 @@ module.exports = (Sequelize, DataTypes) ->
       type: DataTypes.STRING
       allowNull: false
       validate: 
+        notNull: true
         whichCategory: (val) ->
           allowed = ['profile', 'channel']
           unless val in allowed

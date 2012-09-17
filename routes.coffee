@@ -1,39 +1,45 @@
 module.exports = (app) ->
   # Controller Instances
-  Auth      = require('./controllers/auth.coffee')(app)
-  Users     = require('./controllers/users.coffee')(app)
-  Channels  = require('./controllers/channels.coffee')(app)
+  Auth          = require('./controllers/auth.coffee')(app)
+  Users         = require('./controllers/users.coffee')(app)
+  Channels      = require('./controllers/channels.coffee')(app)
+  Playlists     = require('./controllers/playlists.coffee')(app)
+  Invitations   = require('./controllers/invitations.coffee')(app)
 
   # Welcome in the jungle
-  app.get '/', (req, resp) -> resp.send 'Welcome to the WahWah.fm Backbone!'
+  app.get '/', (req, resp) -> 
+    resp.send 'Welcome to the WahWah.fm Backbone!'
  
   # Routing for Channels
-  app.get     '/api/channels', passport.isAuthenticated, Channels.index
-  app.post    '/api/channels', Channels.create
-  app.get     '/api/channels/:uuid/:id', Channels.show
-  app.put     '/api/channels/:uuid/:id', Channels.update
-  app.delete  '/api/channels/:uuid/:id', Channels.destroy
+  app.get     '/api/channels', Channels.index
+  app.post    '/api/channels', passport.isAuthenticated, Channels.create
+  app.get     '/api/channels/:cuid', Channels.show
+  app.put     '/api/channels/:cuid', passport.isAuthenticated, Channels.update
+  app.delete  '/api/channels/:cuid', passport.isAuthenticated, Channels.destroy
+  
+  # Routing for Playlists
+  app.get     '/api/playlists/:cuid', Playlists.show
+  app.post    '/api/playlists/:cuid', passport.isAuthenticated, Playlists.create
   
   # Routing for Users
   app.get     '/api/users', Users.index
-  app.post    '/api/users', Users.create
-  app.put     '/api/users/:uuid', Users.update
-  app.delete  '/api/users/:uuid', Users.destroy
+  app.get     '/api/users/:uuid', Users.show
+  app.put     '/api/users/:uuid', passport.isOwner, Users.update
+  app.delete  '/api/users/:uuid', passport.isOwner, Users.destroy
 
-  # Users Authentification
-  # app.get     '/api/auth/login', passport.authenticate 'facebook', { scope: ['user_status', 'user_photos'] }
-  app.get     '/api/auth/login', (req, resp, next) ->
-    req.session.passport.uuid = req.query.uuid
-    passport.authenticate('facebook', { scope: ['user_status', 'user_photos'] })(req, resp, next)
+  # Routing for Users Authentification
+  app.get     '/api/auth/client', Auth.client
+  app.get     '/api/auth/login', Auth.login
+  app.get     '/api/auth/logout', Auth.logout
+  app.get     '/api/auth/callback', Auth.callback
 
-  app.get     '/api/auth/logout', (req, resp) -> 
-    req.logOut() 
-    resp.json message: 'see you, byebye!'
-
-  app.get     '/api/auth/callback', (req, resp, next) -> 
-    passport.authenticate( 'facebook', { successRedirect: '/' })(req, resp, next)
-
+  # Routing Invitation Code
+  app.post    '/api/invitations/generate', Invitations.generate
+  app.post    '/api/invitations/register', Invitations.register 
+  app.get     '/api/invitations/activate/:code', Invitations.activate
+    
   # Tests
   Tests       = require('./controllers/tests.coffee')(app)
+  app.get     '/tests/sendmail', Tests.sendmail
   app.get     '/tests/upload', Tests.form
   app.post    '/tests/upload', Tests.upload
