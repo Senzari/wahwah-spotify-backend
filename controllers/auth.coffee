@@ -1,24 +1,42 @@
 async   = require 'async'
 util    = require 'util'
 graph   = require 'fbgraph'
+handler = require 'node-restify-errors'
 _       = require 'underscore'
 
 class Auth 
   constructor: (@app) -> 
 
   client: (req, resp, next) ->
-    db.models.Client
-      .findOrCreate 
-        client_id: req.body.client_id 
-      , 
-        client: 'spotify_app'
-        client_id: req.body.client_id 
-      .done (err, client) ->
+    if req.session.passport.client
+      resp.json req.session.passport.client
+    else 
+      async.waterfall [
+        (cb) ->
+          db.models.Client
+            .find 
+              where: { client_id: req.query.client_id }
+            .done cb
+        (client, cb) ->
+          unless client
+            client = db.models.Client
+              .build
+                client: 'spotify_app'
+                client_id: req.query.client_id 
+          
+          unless errors = client.validate()
+            client
+              .save()
+              .done cb
+          else 
+            cb errors
+      ],
+      (err, client) ->
         unless err
-          req.session.client = client
-          resp.send 200
-        else 
-          resp.json 500, message: err
+          req.session.passport.client = client
+          resp.json client
+        else
+          mext err
 
   login: (req, resp, next) ->
     req.session.passport.uuid = req.query.uuid
@@ -29,7 +47,7 @@ class Auth
     resp.json message: 'see you, byebye!'
 
   callback: (req, resp, next) ->
-    passport.authenticate( 'facebook', { successRedirect: '/' })(req, resp, next)
+    passport.authenticate( 'facebook', { successRedirect: '/', failureRedirect: '/login' })(req, resp, next)
 
 
 module.exports = (app) -> new Auth(app)

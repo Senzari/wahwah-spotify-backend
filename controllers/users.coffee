@@ -11,6 +11,7 @@ class Users
     # implement pagination - https://gist.github.com/926857
     db.models.User
       .findAll
+        where: { active: true }
         offset: 0
         limit: 20
       .done (err, users) ->
@@ -24,7 +25,7 @@ class Users
       (cb) ->
         db.models.User
           .find 
-            where: { spotify_id: req.params.uuid }
+            where: { id: req.params.uuid }
             attributes: ['id','spotify_id', 'username', 'locale', 'timezone', 'website', 'profile_url', 'twitter_url']
           .done (err, user) ->
             cb err, user
@@ -42,10 +43,8 @@ class Users
       else
         resp.json 500, message: err
 
-
-
   update: (req, resp) ->
-    unless req.user.spotify_id is req.param.uuid
+    unless req.user.id is req.param.uuid
       return req.json 403, message: 'you are not authorized for this!'
 
     req.user.username = req.body.username
@@ -55,7 +54,7 @@ class Users
       .save()
       .done (err, user) ->
         unless err
-          resp.send 204
+          resp.json 204
         else 
           resp.json 500, message: err
 

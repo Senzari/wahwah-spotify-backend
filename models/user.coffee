@@ -41,8 +41,8 @@ module.exports = (Sequelize, DataTypes) ->
     website:
       type: DataTypes.STRING
       allowNull: true
-      validate:
-        isUrl: true
+      #validate:
+        #isUrl: true
     profile_url:
       type: DataTypes.STRING
       allowNull: true
@@ -51,8 +51,8 @@ module.exports = (Sequelize, DataTypes) ->
     twitter_url:
       type: DataTypes.STRING
       allowNull: true
-      validate:
-        isUrl: true
+      #validate:
+        #isUrl: true
     active:
       type: DataTypes.BOOLEAN
       allowNull: false

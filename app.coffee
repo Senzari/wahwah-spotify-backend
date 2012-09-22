@@ -8,6 +8,7 @@ http      = require('http')
 moniker   = require('moniker')
 passport  = require('passport')
 hashids   = require('hashids')
+handler   = require('node-restify-errors')
 app       = module.exports = express()
 server    = http.createServer app
 
@@ -33,11 +34,19 @@ app.configure ->
   app.use express.methodOverride()
   app.use passport.initialize()
   app.use passport.session()
+  app.use express.logger()
   app.use app.router
+  app.use (err, req, resp, next) ->
+    if err instanceof handler.RestError
+      console.log err if err.statusCode is 500
+      resp.json err.statusCode, err.body
+    else 
+      console.log err
+      resp.json 500, { code: 'internal', message: 'Sorry, an Internal Server Error occured!' }
 
 app.configure 'development', ->
   app.use express.errorHandler dumpExceptions: true, showStack: true 
-  config.db.logging = console.log
+  config.db.logging = false #console.log
 
 app.configure 'production', ->
   app.use express.errorHandler
@@ -50,7 +59,7 @@ app.locals
 Models
 ###
 
-global.db = require('./database')
+global.db = require('./database')(config.db)
 
 ###
 SendGrid Emails 

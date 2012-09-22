@@ -1,20 +1,20 @@
 fs      = require 'fs'
 config  = require('./config')
 
-module.exports = ->
+module.exports = (db_options) ->
   database = 
-    options: config.db 
+    options: db_options
   
   # initialize the database
   Sequelize = require 'sequelize'
   database.module = Sequelize
-  database.client = new Sequelize config.db.shema, config.db.user, config.db.password,
-    host: config.db.host
-    port: config.db.port
+  database.client = new Sequelize db_options.shema, db_options.user, db_options.password or null,
+    host: db_options.host
+    port: db_options.port
     protocol: 'postgres'
     dialect: 'postgres'
     maxConcurrentQueries: 100
-    logging: config.db.logging
+    logging: db_options.logging
 
   # load models from the models directory 
   database.models = 
@@ -27,15 +27,16 @@ module.exports = ->
     Media:      database.client.import(__dirname + '/models/media')
     Invitation: database.client.import(__dirname + '/models/invitation')
 
-  # setup model associations
-  database.models.Client
-    .hasOne(database.models.User)
-    .hasOne(database.models.Token)
-    .hasOne(database.models.Invitation)
+  # setup model associations 
 
   database.models.User
     .hasMany(database.models.Media, as: 'Media')
     .hasMany(database.models.Channel, as: 'Channels')
+    .hasMany(database.models.Client, as: 'Clients')
+    .hasOne(database.models.Token)
+
+  database.models.Client
+    .hasOne(database.models.Invitation)
     
   database.models.Channel
     .hasMany(database.models.Media, as: 'Media')
@@ -50,11 +51,14 @@ module.exports = ->
     .hasMany(database.models.Track, as: 'Tracks')
 
   # sync schema to database
+
   database.client
-    .sync({force: true})
+    .sync({force: false})
     .error (error) ->
       console.log error
     .success ->
       console.log 'database nsync'
-  
+
+
+
   return database

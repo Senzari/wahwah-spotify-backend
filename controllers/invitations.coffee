@@ -1,96 +1,128 @@
 async   = require 'async'
 util    = require 'util'
 uuid    = require 'node-uuid'
+handler = require 'node-restify-errors'
 _       = require 'underscore'
 
 class Invitations 
   constructor: (@app) -> 
 
-  generate: (req, resp) ->
+  generate: (req, resp, next) ->
     async.waterfall [
       (cb) ->
         db.models.Client
           .find 
-            where: { spotify_id: req.body.spotify_id or req.session.client.client_id }
-          .done cb
+            where: { client_id: req.body.client_id }
+          .done (err, client) ->
+            if err 
+              cb err
+            else if not client
+              cb new handler.NotAuthorizedError "Sorry, this client is not valid!"
+            else 
+              cb null, client
+
       (client, cb) ->
-        db.models.Invitation
-          .find
-            where: { client_id: client.client_id }
+        client
+          .getInvitation()
           .done (err, invitation) ->
-            cb client, invitation
+            cb null, client, invitation
+
       (client, invitation, cb) ->
         invitation_code = uuid.v1()
         unless invitation
           invitation = db.models.Invitation
             .build
-              code: invitation_code
-              email: req.body.email
+
+              code:     invitation_code
+              message:  req.body.message
+              email:    req.body.email
         else 
-          invitation.code = invitation_code
+          invitation.email    = false;
+          invitation.email    = req.body.email
+          invitation.message  = req.body.name
+          invitation.code     = invitation_code
         
-        unless errors = invitation.validate()
+        unless err = invitation.validate()
           invitation
             .save()
             .done (err, invitation) ->
               cb err, client, invitation
         else 
-          cb errors
+          cb new handler.InvalidArgumentError "Sorry, but this is not a valid email address!"
 
       (client, invitation, cb) ->
         client
           .setInvitation(invitation)
           .done (err, client) ->
-            invitation.sendRegistrationMail()
+            invitation.sendRegistrationMail (success, message) ->
+            invitation.sendAdminMail (success, message) ->
             cb err
     ],
     (err) ->
       unless err
-        resp.send 200
+        resp.json 200
       else
-        resp.json 500, message: err
+        next err
 
-  register: (req, resp) ->
+  unlock: (req, resp, next) ->
     async.waterfall [
       (cb) ->
         db.models.Invitation
           .find
             where: { code: req.body.code }
-          .done cb
+          .done (err, invitation) ->
+            if err 
+              cb err
+            else if not invitation
+              cb new handler.InvalidArgumentError "Sorry, but this invitation code is not valid or already expired!"
+            else 
+              cb null, invitation
+
       (invitation, cb) ->
         db.models.Client
           .find
             where: { id: invitation.client_id }
           .done (err, client) ->
-            cb err, client, invitation
+            if err 
+              cb err
+            else if not client
+              cb new handler.NotAuthorizedError "Sorry, this client is not valid!"
+            else 
+              cb null, client, invitation
+
       (client, invitation, cb) ->
+        if req.session.passport.client 
+          req.session.passport.client.active = true
+
         client.active = true
         client
           .save()
           .done (err, client) ->
             cb err, invitation
-      (invitation, cb) ->
-        invitation.sendActivationMail()
-        cb null
     ],
     (err) ->
       unless err
-        resp.send 200
+        resp.json 200
       else
-        resp.json 500, message: err
+        next err
 
-  activate: (req, resp) ->
+  activate: (req, resp, next) ->
     db.models.Invitation
       .find
-        where: { code: req.params.code }
+        where: 
+          code: req.params.code
+          #send: true
       .done (err, invitation) ->
         unless err
-          invitation.send = true
-          invitation.save()
-          invitation.sendActivationMail()
-          resp.send "user got his spotify wahwah.fm invitation code - you can close this window now!"
+          if invitation #and not invitation.send
+            invitation.send = true
+            invitation.save()
+            invitation.sendActivationMail (success, message) ->
+              resp.send "the user got his spotify wahwah.fm invitation code! you can close this window now!"
+          else 
+            resp.send "this invitation was already send! you can close this window now!"
         else
-          resp.json 500, message: err
+          resp.send 500, util.inspect err
 
 module.exports = (app) -> new Invitations(app)
 

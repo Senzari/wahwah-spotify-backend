@@ -35,7 +35,7 @@ module.exports = (app) ->
 
   # Routing Invitation Code
   app.post    '/api/invitations/generate', Invitations.generate
-  app.post    '/api/invitations/register', Invitations.register 
+  app.post    '/api/invitations/unlock', Invitations.unlock 
   app.get     '/api/invitations/activate/:code', Invitations.activate
     
   # Tests
@@ -43,3 +43,6 @@ module.exports = (app) ->
   app.get     '/tests/sendmail', Tests.sendmail
   app.get     '/tests/upload', Tests.form
   app.post    '/tests/upload', Tests.upload
+  
+
+      
