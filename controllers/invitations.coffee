@@ -32,14 +32,12 @@ class Invitations
         unless invitation
           invitation = db.models.Invitation
             .build
-
               code:     invitation_code
               message:  req.body.message
               email:    req.body.email
         else 
-          invitation.email    = false;
           invitation.email    = req.body.email
-          invitation.message  = req.body.name
+          invitation.message  = req.body.message
           invitation.code     = invitation_code
         
         unless err = invitation.validate()
@@ -51,12 +49,17 @@ class Invitations
           cb new handler.InvalidArgumentError "Sorry, but this is not a valid email address!"
 
       (client, invitation, cb) ->
-        client
-          .setInvitation(invitation)
-          .done (err, client) ->
-            invitation.sendRegistrationMail (success, message) ->
-            invitation.sendAdminMail (success, message) ->
-            cb err
+        unless invitation.client_id
+          client
+            .setInvitation(invitation)
+            .done (err, client) ->
+              invitation.sendRegistrationMail (success, message) ->
+              invitation.sendAdminMail (success, message) ->
+              cb err
+        else 
+          invitation.sendRegistrationMail (success, message) ->
+          invitation.sendAdminMail (success, message) ->
+          cb null
     ],
     (err) ->
       unless err

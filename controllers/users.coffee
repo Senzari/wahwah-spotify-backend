@@ -8,25 +8,28 @@ class Users
   constructor: (@app) -> 
 
   index: (req, resp) ->
-    # implement pagination - https://gist.github.com/926857
+    console.log "users.index"
     db.models.User
       .findAll
-        where: { active: true }
+        #where: { active: true }
+        attributes: ['id', 'username', 'locale', 'timezone', 'website', 'profile_url', 'twitter_url']
         offset: 0
         limit: 20
       .done (err, users) ->
         unless err
           resp.json users
         else 
+          console.log "error"
           resp.json 500, message: err
 
   show: (req, resp) ->
+    console.log "users.show"
     async.waterfall [
       (cb) ->
         db.models.User
           .find 
-            where: { id: req.params.uuid }
-            attributes: ['id','spotify_id', 'username', 'locale', 'timezone', 'website', 'profile_url', 'twitter_url']
+            where: { id: req.user.id }
+            attributes: ['id', 'username', 'locale', 'timezone', 'website', 'profile_url', 'twitter_url']
           .done (err, user) ->
             cb err, user
       (user, cb) ->

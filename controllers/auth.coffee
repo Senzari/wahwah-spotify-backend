@@ -8,8 +8,10 @@ class Auth
   constructor: (@app) -> 
 
   client: (req, resp, next) ->
-    if req.session.passport.client
-      resp.json req.session.passport.client
+    if req.session.client
+      if req.isAuthenticated() and !req.session.client.user_id
+        req.session.client.user_id = req.user.id
+      resp.json req.session.client
     else 
       async.waterfall [
         (cb) ->
@@ -29,17 +31,16 @@ class Auth
               .save()
               .done cb
           else 
-            cb errors
+            cb new handler.InvalidArgumentError "Sorry, but your client has some hickups!"
       ],
       (err, client) ->
         unless err
-          req.session.passport.client = client
+          req.session.client = client
           resp.json client
         else
-          mext err
+          next err
 
   login: (req, resp, next) ->
-    req.session.passport.uuid = req.query.uuid
     passport.authenticate('facebook', { scope: ['user_status', 'user_photos'] })(req, resp, next)
 
   logout: (req, resp, next) ->
@@ -47,7 +48,7 @@ class Auth
     resp.json message: 'see you, byebye!'
 
   callback: (req, resp, next) ->
-    passport.authenticate( 'facebook', { successRedirect: '/', failureRedirect: '/login' })(req, resp, next)
+    passport.authenticate( 'facebook', { successRedirect: '/', failureRedirect: '/api/auth/login' })(req, resp, next)
 
 
 module.exports = (app) -> new Auth(app)

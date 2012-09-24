@@ -13,6 +13,7 @@ module.exports = (db_options) ->
     port: db_options.port
     protocol: 'postgres'
     dialect: 'postgres'
+    omitNull: true
     maxConcurrentQueries: 100
     logging: db_options.logging
 

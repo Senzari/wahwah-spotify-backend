@@ -43,6 +43,5 @@ module.exports = (app) ->
   app.get     '/tests/sendmail', Tests.sendmail
   app.get     '/tests/upload', Tests.form
   app.post    '/tests/upload', Tests.upload
-  
 
       

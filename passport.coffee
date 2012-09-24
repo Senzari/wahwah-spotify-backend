@@ -56,7 +56,6 @@ module.exports =
             cb err, user
 
       (user, cb) ->
-        console.log req.query
         db.models.Client
           .find
             # TODO: howto handle the query.state paramater? 
