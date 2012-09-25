@@ -28,21 +28,35 @@ class Users
       (cb) ->
         db.models.User
           .find 
-            where: { id: req.user.id }
+            where: { id: req.params.uuid }
             attributes: ['id', 'username', 'locale', 'timezone', 'website', 'profile_url', 'twitter_url']
           .done (err, user) ->
-            cb err, user
+            if user
+              cb err, user
+            else 
+              cb new Error('Sorry, the server has some hickups!')
       (user, cb) ->
-        db.models.Media
-          .find
-            where: { user_id: user.id }
-          .done (err, media) ->
-            user.media = media
-            cb err, user
+          db.models.Media
+            .find
+              where: { user_id: user.id }
+            .done (err, media) ->
+              cb err, user, media
+       (user, media, cb) ->
+          db.models.Channel
+            .find
+              where: { user_id: user.id }
+            .done (err, channel) ->
+              user.channel = channel
+              cb err, user, media, channel
     ],
-    (err, user) ->
+    (err, user, media, channel) ->
       unless err
-        resp.json user
+
+        rtn = user.toJSON()
+        rtn.media = media.toJSON() if media
+        rtn.channel = channel.toJSON() if channel
+
+        resp.json rtn
       else
         resp.json 500, message: err
 

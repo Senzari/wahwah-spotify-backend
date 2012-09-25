@@ -13,7 +13,6 @@ module.exports = (db_options) ->
     port: db_options.port
     protocol: 'postgres'
     dialect: 'postgres'
-    omitNull: true
     maxConcurrentQueries: 100
     logging: db_options.logging
 
@@ -28,7 +27,7 @@ module.exports = (db_options) ->
     Media:      database.client.import(__dirname + '/models/media')
     Invitation: database.client.import(__dirname + '/models/invitation')
 
-  # setup model associations 
+  # setup model association
 
   database.models.User
     .hasMany(database.models.Media, as: 'Media')

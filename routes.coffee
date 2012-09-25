@@ -12,7 +12,8 @@ module.exports = (app) ->
  
   # Routing for Channels
   app.get     '/api/channels', Channels.index
-  app.post    '/api/channels', passport.isAuthenticated, Channels.create
+  #app.post    '/api/channels', passport.isAuthenticated, Channels.create
+  app.post    '/api/channels/media/:type', Channels.media
   app.get     '/api/channels/:cuid', Channels.show
   app.put     '/api/channels/:cuid', passport.isAuthenticated, Channels.update
   app.delete  '/api/channels/:cuid', passport.isAuthenticated, Channels.destroy
@@ -32,6 +33,8 @@ module.exports = (app) ->
   app.get     '/api/auth/login', Auth.login
   app.get     '/api/auth/logout', Auth.logout
   app.get     '/api/auth/callback', Auth.callback
+  app.get     '/api/auth/login/done', Auth.done
+  app.get     '/api/auth/login/failure',Auth.failure
 
   # Routing Invitation Code
   app.post    '/api/invitations/generate', Invitations.generate

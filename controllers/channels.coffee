@@ -1,4 +1,7 @@
-async     = require 'async'
+async      = require 'async'
+cloudinary = require 'cloudinary'
+uuid       = require 'node-uuid'
+fs         = require 'fs'
 
 class Channels 
   constructor: (@app) -> 
@@ -12,6 +15,23 @@ class Channels
         console.log req.user
 
     resp.json hello:'test'
+
+  media: (req, resp) ->
+    console.log "upload image to cloudinary"
+    stream = cloudinary.uploader.upload_stream (result) ->
+      console.log(result);
+      res = cloudinary.image result.public_id, 
+          format: "png", 
+          width: 100, 
+          height: 100, 
+          crop: "fill" 
+
+      resp.json res 
+
+      fs
+        .createReadStream req.files.image.path, encoding: 'binary'
+        .on 'data', stream.write
+        .on 'end', stream.end
 
   create: (req, resp) ->
     user = req.user   

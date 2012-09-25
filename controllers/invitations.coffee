@@ -36,9 +36,9 @@ class Invitations
               message:  req.body.message
               email:    req.body.email
         else 
-          invitation.email    = req.body.email
-          invitation.message  = req.body.message
-          invitation.code     = invitation_code
+          invitation.email   = req.body.email
+          invitation.message = req.body.message
+          invitation.code    = invitation_code
         
         unless err = invitation.validate()
           invitation

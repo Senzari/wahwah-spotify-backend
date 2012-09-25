@@ -12,6 +12,9 @@ module.exports =
     passReqToCallback: true
   , 
   (req, accessToken, refreshToken, profile, done) ->
+    console.log "enter passport"
+    console.log req.session
+
     async.waterfall [
       # rebuild this using the non private parts and eventually 'fbgrap'
       (cb) ->
@@ -56,11 +59,17 @@ module.exports =
             cb err, user
 
       (user, cb) ->
+        # req.query.state
+        if req.session.client
+          client_id = req.session.client.id 
+        else 
+          client_id = req.query.state
+
         db.models.Client
           .find
             # TODO: howto handle the query.state paramater? 
             # right know it doesn't get passed through from facebook/passport 
-            where: { id: req.query.state, active: true }
+            where: { id: client_id, active: true }
           .done (err, client) ->
             # arg spaghetti carbonara - fix it!
             unless err
@@ -70,19 +79,19 @@ module.exports =
                   client
                     .save()
                     .done (err, client) ->
-                      # TODO - Weiterleitung zur Success Page!
                       cb err, user
                 else 
-                  # TODO - Weiterleitung zur Success Page!
                   cb null, user
               else
-                # TODO - Weiterleitung zur 'please request an invitation code seite' ...
                 cb new handler.NotAuthorizedError "Sorry, but we are in the beta phase right now, please request an invitation code first!"
             else 
               cb err, user
     ],
     (err, user) ->
       unless err
+        if req.session.client
+          req.session.client.active   = true 
+          req.session.client.loggedIn = true
         done null, user
       else 
         done err
