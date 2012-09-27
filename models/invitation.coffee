@@ -41,7 +41,7 @@ module.exports = (Sequelize, DataTypes) ->
             balh blah blah, 
             please enter your invite code into the wahwah spotify app,
             blah blah blah .... 
-            <a href='spotify:app:wahwah-prototype:profile'>#{@code}</a>
+            <a href='spotify:app:wahwah-prototype-live:profile'>#{@code}</a>
           "
         , cb
 
