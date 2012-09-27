@@ -1,6 +1,10 @@
 {
 	"name": "wahwah-spotify",
 	"version": "1.0.0",
+	"engines": {
+		"node": "0.8.x",
+		"npm": "1.1.x"
+	}
 	/*
 	"scripts": {
     	"start": "./node_modules/coffee-script/bin/coffee app.coffee",
@@ -31,8 +35,4 @@
 	    "supertest": "0.2.x"
 	},
 	*/
-	"engines": {
-		"node": "0.8.x",
-		"npm": "1.1.x"
-	}
 }
