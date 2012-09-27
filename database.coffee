@@ -6,6 +6,9 @@ module.exports = (db_options) ->
     options: db_options
   
   console.log 
+    db: db_options.shema
+    user: db_options.user
+    pass: db_options.password or null
     host: db_options.host
     port: db_options.port
     protocol: 'postgres'
