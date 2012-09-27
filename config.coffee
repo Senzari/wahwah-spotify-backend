@@ -3,7 +3,7 @@ module.exports =
     hash_salt: 'mr scott'
     limit_users_per_page: 20
   db:
-    schema:   process.env.DATABASE_NAME
+    shema:    process.env.DATABASE_NAME
     user:     process.env.DATABASE_USERNAME
     password: process.env.DATABASE_PASSWORD
     host:     process.env.DATABASE_HOST

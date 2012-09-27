@@ -68,7 +68,7 @@ app.configure ->
 
 app.configure 'development', ->
   app.use express.errorHandler dumpExceptions: true, showStack: true 
-  config.db.logging = false #console.log
+  config.db.logging = console.log
 
 app.configure 'production', ->
   app.use express.errorHandler

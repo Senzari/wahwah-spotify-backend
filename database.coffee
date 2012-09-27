@@ -5,16 +5,17 @@ module.exports = (db_options) ->
   database = 
     options: db_options
   
-  console.log 
-    db: db_options.shema
-    user: db_options.user
-    pass: db_options.password or null
-    host: db_options.host
-    port: db_options.port
-    protocol: 'postgres'
-    dialect: 'postgres'
-    maxConcurrentQueries: 100
-    logging: db_options.logging
+  if process.env.NODE_ENV is 'development'
+    console.log 
+      db: db_options.shema
+      user: db_options.user
+      pass: db_options.password or null
+      host: db_options.host
+      port: db_options.port
+      protocol: 'postgres'
+      dialect: 'postgres'
+      maxConcurrentQueries: 100
+      logging: db_options.logging
 
   # initialize the database
   Sequelize = require 'sequelize'
