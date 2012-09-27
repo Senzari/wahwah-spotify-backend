@@ -41,7 +41,7 @@ module.exports = (Sequelize, DataTypes) ->
             balh blah blah, 
             please enter your invite code into the wahwah spotify app,
             blah blah blah .... 
-            <a href='spotify:app:wahwah-prototype-live:profile'>#{@code}</a>
+            <a href='spotify:app:wahwah-prototype-live:invitation'>#{@code}</a>
           "
         , cb
 
@@ -54,6 +54,6 @@ module.exports = (Sequelize, DataTypes) ->
             <p>Hello WahWah Admin,<br>
             this is a automatic email from the WahWah Spotify backend, there is a new registrant and want's entry!</p>\n
             <p>#{@message}</p><br>
-            <a href='http://localhost:5100/api/invitations/activate/#{@code}'>active</a>
+            <a href='http://wahwah-spotify.herokuapp.com/api/invitations/activate/#{@code}'>active</a>
           "
         , cb

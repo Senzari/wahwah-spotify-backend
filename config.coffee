@@ -10,9 +10,10 @@ module.exports =
     port:     process.env.DATABASE_PORT
     logging:  console.log
   fb:
-    client_id:      process.env.FACEBOOK_ID 
-    client_secret:  process.env.FACEBOOK_SECRET
-    scope:          'email, user_about_me, user_birthday, user_location, publish_stream'
+    facebook_callback:  process.env.FACEBOOK_CALLBACK
+    client_id:          process.env.FACEBOOK_ID
+    client_secret:      process.env.FACEBOOK_SECRET
+    scope:              'email, user_about_me, user_birthday, user_location, publish_stream'
   mail:
     user:     process.env.SENDGRID_USERNAME
     password: process.env.SENDGRID_PASSWORD
