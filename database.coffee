@@ -5,6 +5,14 @@ module.exports = (db_options) ->
   database = 
     options: db_options
   
+  console.log 
+    host: db_options.host
+    port: db_options.port
+    protocol: 'postgres'
+    dialect: 'postgres'
+    maxConcurrentQueries: 100
+    logging: db_options.logging
+
   # initialize the database
   Sequelize = require 'sequelize'
   database.module = Sequelize
