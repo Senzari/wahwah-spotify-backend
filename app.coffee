@@ -107,4 +107,4 @@ Start up the Http Server
 
 unless module.parent
   server.listen process.env.PORT or 3000
-  console.log "Express listening on port #{server.address().port}"
+  console.log "Express listening on port #{server.address().port} - oh yeah!"
