@@ -8,7 +8,7 @@ module.exports =
   passport.use new Strategy 
     clientID: config.fb.client_id
     clientSecret: config.fb.client_secret
-    callbackURL: process.env.facebook_callback
+    callbackURL: config.fb.facebook_callback
     passReqToCallback: true
   , 
   (req, accessToken, refreshToken, profile, done) ->
