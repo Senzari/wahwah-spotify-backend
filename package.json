@@ -1,11 +1,13 @@
 {
 	"name": "wahwah-spotify",
 	"version": "1.0.0",
+	/*
 	"scripts": {
     	"start": "./node_modules/coffee-script/bin/coffee app.coffee",
     	"test": "./node_modules/mocha/bin/mocha --compilers coffee:coffee-script -R spec",
     	"tests": "foreman start test"
   	},
+  	*/
 	"dependencies": {
 	    "express": "3.0.x",
 	    "coffee-script": "1.3.x",
