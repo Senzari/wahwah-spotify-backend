@@ -53,6 +53,9 @@ module.exports = (Sequelize, DataTypes) ->
       allowNull: true
       #validate:
         #isUrl: true
+    channel_id:
+      type: DataTypes.INTEGER
+      allowNull: true
     active:
       type: DataTypes.BOOLEAN
       allowNull: false

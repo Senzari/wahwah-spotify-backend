@@ -9,8 +9,6 @@ module.exports = (Sequelize, DataTypes) ->
     status_message: 
       type: DataTypes.TEXT
       allowNull: true
-      validate: 
-        max: 1024
     active:
       type: DataTypes.BOOLEAN
       allowNull: false
@@ -19,4 +17,4 @@ module.exports = (Sequelize, DataTypes) ->
         notNull: true
   ,
     underscored: true
-    paranoid: true
+    paranoid: false

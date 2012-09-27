@@ -21,6 +21,16 @@ module.exports = (Sequelize, DataTypes) ->
       validate:
         notNull: true
         isUrl: true
+    url_small:
+      type: DataTypes.STRING
+      allowNull: true
+      validate:
+        isUrl: true
+    url_large:
+      type: DataTypes.STRING
+      allowNull: true
+      validate:
+        isUrl: true
     format:
       type: DataTypes.STRING
       allowNull: true

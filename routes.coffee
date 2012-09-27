@@ -13,14 +13,15 @@ module.exports = (app) ->
   # Routing for Channels
   app.get     '/api/channels', Channels.index
   #app.post    '/api/channels', passport.isAuthenticated, Channels.create
-  app.post    '/api/channels/media/:type', Channels.media
+  app.post    '/api/channels/media/:type', passport.isAuthenticated, Channels.media
+  app.post    '/api/channels/:cuid/media/:type', passport.isAuthenticated, Channels.media
   app.get     '/api/channels/:cuid', Channels.show
   app.put     '/api/channels/:cuid', passport.isAuthenticated, Channels.update
   app.delete  '/api/channels/:cuid', passport.isAuthenticated, Channels.destroy
   
   # Routing for Playlists
   app.get     '/api/playlists/:cuid', Playlists.show
-  app.post    '/api/playlists/:cuid', passport.isAuthenticated, Playlists.create
+  app.post    '/api/playlists/:cuid', passport.isAuthenticated, passport.isAuthenticated, Playlists.create
   
   # Routing for Users
   app.get     '/api/users', Users.index

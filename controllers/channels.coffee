@@ -2,36 +2,116 @@ async      = require 'async'
 cloudinary = require 'cloudinary'
 uuid       = require 'node-uuid'
 fs         = require 'fs'
+handler    = require 'node-restify-errors'
+_          = require 'underscore'
 
 class Channels 
   constructor: (@app) -> 
 
   index: (req, resp) ->
-    db.models.Channel
-      .findAll
-        limit: 10
-      .done (err, channels) ->
-        console.log channels 
-        console.log req.user
+    async.waterfall [
+      (cb) ->
+        db.models.Channel
+          .findAll
+            limit: 10
+            where: 
+              active: true
+            order: "id DESC"
+          .done cb
+      (channels, cb) ->
+        _channels = []
+        async.forEachSeries channels, 
+          (channel, _cb) ->
+            db.models.Media
+              .find
+                attributes: ['public_id','url_small', 'url_large']
+                where: 
+                  user_id: channel.user_id
+                  category: "profile"
+                order: "id DESC"
+              .done (err, media) ->
+                _channel = channel.toJSON()
+                _channel.media = media
+                _channels.push _channel
+                _cb err
+        ,
+          (err, channels) ->
+            cb err, _channels
+    ],
+    (err, channels) ->
+      unless err and channels is not null
+        resp.json channels
+      else 
+        resp.json 500, new Error "arg!"
 
-    resp.json hello:'test'
 
-  media: (req, resp) ->
-    console.log "upload image to cloudinary"
-    stream = cloudinary.uploader.upload_stream (result) ->
-      console.log(result);
-      res = cloudinary.image result.public_id, 
-          format: "png", 
-          width: 100, 
-          height: 100, 
+  media: (req, resp, next) ->
+    if req.params.type in ["profile","channel"]
+      stream = cloudinary.uploader.upload_stream (result) ->
+        if result.error
+          return resp.json 500, message: result.error.message
+
+        small = cloudinary.url result.public_id,  
+          format: "jpg" 
+          width: 100 
+          height: 100 
           crop: "fill" 
+          gravity: "faces"
+        
+        large = ""
+        if req.params.type is "profile"
+          large = cloudinary.url result.public_id,  
+            format: "jpg" 
+            width: 190 
+            height: 190 
+            crop: "fill"
+        else
+          large = cloudinary.url result.public_id,  
+            format: "jpg" 
+            width: 1600 
+            height: 1200 
+            crop: "limit"
 
-      resp.json res 
+        async.waterfall [
+          (cb) ->
+            db.models.Media
+              .findAll
+                where: 
+                  user_id: req.user.id 
+                  resource_type: result.resource_type
+                  category: req.params.type
+              .done (err, files) ->
+                for file in files
+                  do (file) -> 
+                    cloudinary.uploader.destroy file.public_id, 
+                      -> console.log "cloudinary file deleted, id: "+file.public_id
+                    file.destroy()
+                cb err
+          (cb) ->
+            db.models.Media
+              .create
+                public_id: result.public_id
+                resource_type: result.resource_type
+                url: result.url
+                url_small: small
+                url_large: large
+                format: result.format
+                category: req.params.type
+                user_id: req.user.id
+              .done cb
+        ], 
+        (err, media) ->
+          unless err 
+            resp.json { type: req.params.type, small: small, large: large, public_id: result.public_id }
+          else
+            resp.json 500, message: err 
 
-      fs
-        .createReadStream req.files.image.path, encoding: 'binary'
-        .on 'data', stream.write
-        .on 'end', stream.end
+      path = _.first(req.files.user_file).path
+      fs.createReadStream(path, encoding: 'binary')
+        .on('data', stream.write)
+        .on('end', stream.end)
+    else
+      next new handler.InvalidArgumentError("Sorry, media type is missing!")
 
   create: (req, resp) ->
     user = req.user   
@@ -40,8 +120,8 @@ class Channels
         channel = db.models.Channel
           .build
             user_id: user.id
-            name: user.username + " channel"
-            status_message: user.username + " is listening to wahwah.fm!"
+            name: user.username
+            status_message: "is listening to wahwah.fm!"
         unless errors = channel.validate()
           channel
             .save()
@@ -77,15 +157,20 @@ class Channels
             channel.media = media
             cb err, channel
       (channel, cb) ->
-        channel
-          .getTags()
-          .done (err, tags) ->
-            channel.tags = tags
-            cb err, channel
+        if channel
+          channel
+            .getTags()
+            .done (err, tags) ->
+              channel.tags = tags
+              cb err, channel
+        else
+          cb new Error("this channel doenst exist!")
     ],
     (err, channel) ->
       unless err
-        resp.json channel
+        _channel = channel.toJSON();
+        _channel.tags = channel.tags
+        resp.json _channel
       else
         resp.json 500, message: err
 

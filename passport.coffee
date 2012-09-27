@@ -13,8 +13,6 @@ module.exports =
   , 
   (req, accessToken, refreshToken, profile, done) ->
     console.log "enter passport"
-    console.log req.session
-
     async.waterfall [
       # rebuild this using the non private parts and eventually 'fbgrap'
       (cb) ->
@@ -110,13 +108,13 @@ passport.isAuthenticated = (req, resp, next) ->
     next()
 
 passport.isOwner = (req, resp, next) ->
-  unless req.isAuthenticated() and req.params.uuid is req.user.id
-    next new handler.NotAuthorizedError "Sorry, but this shit belongs not to you!"
-  else 
+  if req.isAuthenticated() and +req.params.uuid is +req.user.id
     next()
-
+  else 
+    next new handler.NotAuthorizedError "Sorry, but this shit belongs not to you!"
+    
 passport.isAdmin = (req, resp, next) ->
-  unless req.isAuthenticated() and req.user.role is 'admin'
-    next new handler.NotAuthorizedError "Sorry, but this shit belongs not to you!"
-  else 
+  if req.isAuthenticated() and req.user.role is 'admin'
     next()
+  else 
+    next new handler.NotAuthorizedError "Sorry, but this shit belongs not to you!"

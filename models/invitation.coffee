@@ -37,7 +37,12 @@ module.exports = (Sequelize, DataTypes) ->
           to: @email
           from: config.mail.from
           subject: "Your Spotify WahWah.fm Invite Code"
-          text: "balh blah blah, #deeplink, code: #{@code}"
+          html: "
+            balh blah blah, 
+            please enter your invite code into the wahwah spotify app,
+            blah blah blah .... 
+            <a href='spotify:app:wahwah-prototype:profile'>#{@code}</a>
+          "
         , cb
 
       sendAdminMail: (cb) ->

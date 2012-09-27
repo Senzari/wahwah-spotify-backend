@@ -6,6 +6,9 @@ module.exports = (Sequelize, DataTypes) ->
       validate:
         contains: "spotify:track"
         notNull: true
+    order:
+      type: DataTypes.INTEGER
+      allowNull: false
     name:
       type: DataTypes.TEXT
       allowNull: false
@@ -16,7 +19,12 @@ module.exports = (Sequelize, DataTypes) ->
       type: DataTypes.TEXT
       allowNull: true
       validate:
-        max: 1024
+        max: 5000
+    artist:
+      type: DataTypes.TEXT
+      allowNull: true
+      validate:
+        max: 5000
     duration:
       type: DataTypes.INTEGER
       allowNull: true
@@ -24,4 +32,10 @@ module.exports = (Sequelize, DataTypes) ->
         isInt: true
   ,
     underscored: true
-    paranoid: true
+    paranoid: false
+    classMethods:
+      emptyTracksFromPlaylist: (channel_id, cb) ->
+        sql = db.module.Utils.format ['DELETE FROM "Tracks" WHERE "channel_id" = ?', channel_id]
+        db.client
+          .query(sql, null, {raw: true})
+          .done cb

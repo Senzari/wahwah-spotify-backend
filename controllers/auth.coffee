@@ -9,7 +9,6 @@ class Auth
 
   client: (req, resp, next) ->
     console.log "session"
-    console.log req.session
     if req.session.client
       if req.isAuthenticated() and !req.session.client.user_id
         req.session.client.user_id = req.user.id
