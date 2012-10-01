@@ -15,6 +15,12 @@ module.exports = (Sequelize, DataTypes) ->
       defaultValue: false
       validate:
         notNull: true
+    playlist:
+      type: DataTypes.BOOLEAN
+      allowNull: false
+      defaultValue: false
+      validate:
+        notNull: true
   ,
     underscored: true
     paranoid: false

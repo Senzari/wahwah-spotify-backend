@@ -25,6 +25,13 @@ class Playlists
             ,
               (err) ->
                 unless err
+                  db.module.Utils.format ['UPDATE "Channels" SET "playlist" = TRUE WHERE "channel_id" = ?', req.params.cuid]
+                  db.client
+                    .query(sql, null, {raw: true})
+                    .done (err, res) ->
+                      if err
+                        console.log err
+
                   resp.json 200, channel_id: req.params.cuid
                 else 
                   console.log err
