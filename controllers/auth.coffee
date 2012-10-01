@@ -8,10 +8,13 @@ class Auth
   constructor: (@app) -> 
 
   client: (req, resp, next) ->
-    console.log "session"
     if req.session.client
-      if req.isAuthenticated() and !req.session.client.user_id
+      if req.isAuthenticated()
         req.session.client.user_id = req.user.id
+
+      console.log "auth/client - session in store:"
+      console.log req.session
+
       resp.json req.session.client
     else 
       async.waterfall [
@@ -47,6 +50,9 @@ class Auth
     unless req.session.client 
       req.session.client = {}
       req.session.client.id = req.query.client_id
+
+    console.log "login session:"
+    console.log req.session
     passport.authenticate('facebook', { scope: ['user_status', 'user_photos'] })(req, resp, next)
 
   logout: (req, resp, next) ->

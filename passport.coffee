@@ -64,8 +64,6 @@ module.exports =
         else 
           client_id = req.query.state
 
-        console.log req.session.client     
-        
         db.models.Client
           .find
             # TODO: howto handle the query.state paramater? 
