@@ -27,13 +27,17 @@ module.exports = (Sequelize, DataTypes) ->
     email:
       type: DataTypes.STRING 
       allowNull: true
+      ###
       validate:
         isEmail: true
+      ###
     locale:
       type: DataTypes.STRING
       allowNull: true
+      ###
       validate:
         len: 5
+      ###
     timezone:
       type: DataTypes.INTEGER
       validate:
@@ -41,8 +45,10 @@ module.exports = (Sequelize, DataTypes) ->
     website:
       type: DataTypes.STRING
       allowNull: true
-      #validate:
-        #isUrl: true
+      ###
+      validate:
+        isUrl: true
+      ###
     profile_url:
       type: DataTypes.STRING
       allowNull: true
@@ -51,8 +57,10 @@ module.exports = (Sequelize, DataTypes) ->
     twitter_url:
       type: DataTypes.STRING
       allowNull: true
-      #validate:
-        #isUrl: true
+      ###
+      validate:
+        isUrl: true
+      ###
     channel_id:
       type: DataTypes.INTEGER
       allowNull: true
