@@ -44,7 +44,7 @@ module.exports = (Sequelize, DataTypes) ->
           html: "
             Hi there, it is our pleasure to send you your personal invite code for your wahwah.fm station on Spotify.<br/>
             Just copy and paste this code, <a href='spotify:app:wahwah-prototype-live:invitation'>sign up</a> and you are ready to launch your own music channel.<br><br>
-            #{@code}
+            Your invite code: #{@code}
             <br><br>
             We are looking forward to tune in. wahwah.fm<br/><br/>
             *************************** <br/>You want to get in touch with us? Just reply to this email. 
