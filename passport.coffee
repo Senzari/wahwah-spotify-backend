@@ -23,6 +23,7 @@ module.exports =
             cb null, user
 
       (user, cb) ->
+        console.log(profile);
         unless user
           user = db.models.User
             .build
