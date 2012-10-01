@@ -64,11 +64,13 @@ module.exports =
         else 
           client_id = req.query.state
 
+        console.log req.session.client     
+        
         db.models.Client
           .find
             # TODO: howto handle the query.state paramater? 
             # right know it doesn't get passed through from facebook/passport 
-            where: { id: client_id, active: true }
+            where: { id: client_id } #, active: true }
           .done (err, client) ->
             # arg spaghetti carbonara - fix it!
             unless err
@@ -87,6 +89,7 @@ module.exports =
               cb err, user
     ],
     (err, user) ->
+
       unless err
         if req.session.client
           req.session.client.active   = true 
