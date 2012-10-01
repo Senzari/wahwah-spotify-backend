@@ -29,8 +29,9 @@ module.exports = (Sequelize, DataTypes) ->
           to: @email
           from: config.mail.from
           subject: "thanks for your interest in WahWah.fm"
-          html: " Hi there, we are happy to see you interested in your own wahwah.fm station on Spotify. We are going to inform you once we are ready to grant your application.
-          music was our first love wahwah.fm<br/><br/>
+          html: " Hi there, we are happy to see you interested in your own wahwah.fm station on Spotify.<br/>
+          We are going to inform you once we are ready to grant your application.<br/><br/>
+          Music was our first love wahwah.fm<br/><br/>
           *************************** <br/>You want to get in touch with us? Just reply to this email. 
           "
         , cb
@@ -42,7 +43,7 @@ module.exports = (Sequelize, DataTypes) ->
           subject: "your invite code"
           html: "
             Hi there, it is our pleasure to send you your personal invite code for your wahwah.fm station on Spotify. Just copy and paste this code, sign up and you are ready to launch your own music channel.<br><br>
-            {@code}
+            #{@code}
             <br>
             <a href='spotify:app:wahwah-prototype-live:invitation'></a><br><br>
             We are looking forward to tune in. wahwah.fm<br/><br/>
