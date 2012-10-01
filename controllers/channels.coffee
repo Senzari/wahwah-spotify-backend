@@ -16,7 +16,7 @@ class Channels
             limit: 10
             where: 
               active: true
-              playlist: true
+              #playlist: true
             order: "id DESC"
           .done cb
       (channels, cb) ->
