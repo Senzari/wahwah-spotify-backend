@@ -28,20 +28,25 @@ module.exports = (Sequelize, DataTypes) ->
         sendmail.send
           to: @email
           from: config.mail.from
-          subject: "Your Registration on Spotify WahWah.fm"
-          text: "balh blah blah"
+          subject: "thanks for your interest in WahWah.fm"
+          html: " Hi there, we are happy to see you interested in your own wahwah.fm station on Spotify. We are going to inform you once we are ready to grant your application.
+          music was our first love wahwah.fm<br/><br/>
+          *************************** <br/>You want to get in touch with us? Just reply to this email. 
+          "
         , cb
 
       sendActivationMail: (cb) ->
         sendmail.send
           to: @email
           from: config.mail.from
-          subject: "Your Spotify WahWah.fm Invite Code"
+          subject: "your invite code"
           html: "
-            balh blah blah, 
-            please enter your invite code into the wahwah spotify app,
-            blah blah blah .... 
-            <a href='spotify:app:wahwah-prototype-live:invitation'>#{@code}</a>
+            Hi there, it is our pleasure to send you your personal invite code for your wahwah.fm station on Spotify. Just copy and paste this code, sign up and you are ready to launch your own music channel.<br><br>
+            {@code}
+            <br>
+            <a href='spotify:app:wahwah-prototype-live:invitation'></a><br><br>
+            We are looking forward to tune in. wahwah.fm<br/><br/>
+            *************************** <br/>You want to get in touch with us? Just reply to this email. 
           "
         , cb
 
