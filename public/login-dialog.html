@@ -1,0 +1,88 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Sign in to Wahwah.fm</title>
+		<style type="text/css">
+			html {
+				overflow: hidden;
+			}
+			body {
+				margin: 0; 
+				padding: 0;
+				text-align: center;
+				font-family: Arial, Helvetica, sans-serif;
+				font-size: 12px;
+				color: #EEE;
+				line-height: 190%;
+				background-color: #222;
+			}
+			button {
+				text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+				color: #ffffff;
+				background-color: #6181b1;
+				border-color: #333;
+				cursor: pointer;
+				padding: 5px;
+			}
+			button:hover,
+			button:active {
+				background-color: #6181b1;
+				*background-color: #5274a6;
+			}
+			form: {
+				margin: 0;
+				padding: 0;
+			}
+			a, a:active, a:visited {
+				color: #3BB1CF;
+				text-decoration: none;
+			}
+			a:hover {
+				text-decoration: underline;
+			}
+			a[href^="http:"]::after {
+				margin-left: 3px;
+				content: url('sp://import/img/icon-external.png');
+				opacity: 0.5;
+			}
+			#main: {
+				width: 640px;
+			}
+			#header {
+				padding: 30px 0 30px 0;
+				background-color: #FFF;
+				width: 100%;
+			}
+			#content {
+				height: 100%;
+				color: #FFF;
+				text-align: left;
+				padding: 100px 40px 50px 40px;
+			}
+			#disclaimer {
+				font-weight: bold;
+				height: 50px
+			}
+		</style>
+	</head>
+	<body>
+		<div id="main">
+			<div id="header">
+				<img src="/img/ww_logo.png">
+			</div>
+			<div id="content">
+				<form action="http://wahwah-spotify.herokuapp.com/api/auth/login">
+					<div id="disclaimer">
+						<input type="checkbox"/>
+						I understand that when I log into wahwah.fm, wahwah.fm will be able to associate information about my Spotify use, such as library and listening history, with my account. The collection and use of this information will be governed by the wahwah <a href="http://wahwah.fm/spotify/disclaimer.html">Privacy Policy</a>.
+					</div>
+					<br><br>
+					<button>Login with Facebook</button>
+				</form>
+			</div>
+		</div>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.shake.min.js"></script>
+		<script src="js/login.js"></script>
+	</body>
+</html>

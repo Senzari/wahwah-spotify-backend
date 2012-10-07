@@ -28,7 +28,9 @@ Express configuration
 ###
 
 app.configure -> 
-  app.set "jsonp callback", true
+  #app.set "jsonp callback", true
+  #app.use express.logger()
+  app.use express.static(__dirname + '/public')
   app.use express.cookieParser()
   app.use express.session({secret: config.app.hash_salt})
   app.use express.bodyParser()
@@ -41,7 +43,6 @@ app.configure ->
   app.use express.methodOverride()
   app.use passport.initialize()
   app.use passport.session()
-  #app.use express.logger()
 
   app.use (req, resp, next) ->
     resp.header 'Access-Control-Allow-Origin', '*'

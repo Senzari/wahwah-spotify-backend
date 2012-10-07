@@ -46,6 +46,9 @@ class Auth
         else
           next err
 
+  dialog: (req, resp) ->
+    resp.render('login-dialog.html');
+
   login: (req, resp, next) ->
     unless req.session.client 
       req.session.client = {}
