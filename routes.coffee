@@ -36,7 +36,7 @@ module.exports = (app) ->
   app.get     '/api/auth/logout', Auth.logout
   app.get     '/api/auth/callback', Auth.callback
   app.get     '/api/auth/login/done', Auth.done
-  app.get     '/api/auth/login/failure',Auth.failure
+  app.get     '/api/auth/login/failure', Auth.failure
 
   # Routing Invitation Code
   app.post    '/api/invitations/generate', Invitations.generate

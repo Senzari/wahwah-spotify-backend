@@ -30,12 +30,14 @@ class Auth
                 client: 'spotify_app'
                 client_id: req.query.client_id 
           
-          unless errors = client.validate()
-            client
-              .save()
-              .done cb
-          else 
-            cb new handler.InvalidArgumentError "Sorry, but your client has some hickups!"
+            unless errors = client.validate()
+              client
+                .save()
+                .done cb
+            else 
+              cb new handler.InvalidArgumentError "Sorry, but your client has some hickups!"
+          else
+            cb null, client
       ],
       (err, client) ->
         unless err

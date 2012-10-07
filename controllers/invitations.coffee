@@ -13,13 +13,23 @@ class Invitations
         db.models.Client
           .find 
             where: { client_id: req.body.client_id }
-          .done (err, client) ->
-            if err 
-              cb err
-            else if not client
-              cb new handler.NotAuthorizedError "Sorry, this client is not valid!"
-            else 
-              cb null, client
+          .done cb
+
+      (client, cb) ->
+        unless client
+          client = db.models.Client
+            .build
+              client: 'spotify_app'
+              client_id: req.query.client_id 
+        
+          unless errors = client.validate()
+            client
+              .save()
+              .done cb
+          else 
+            cb new handler.InvalidArgumentError "Sorry, but your client has some hickups!"
+        else
+          cb null, client
 
       (client, cb) ->
         client
