@@ -23,7 +23,6 @@ module.exports =
             cb null, user
 
       (user, cb) ->
-        console.log(profile);
         unless user
           user = db.models.User
             .build
@@ -35,6 +34,7 @@ module.exports =
               email:        profile._json.email
               locale:       profile._json.locale
               timezone:     profile._json.timezone
+              greenhorn:    true
         else
           user.firstname    = profile.name.givenName
           user.lastname     = profile.name.familyName
@@ -82,7 +82,14 @@ module.exports =
                 else 
                   cb null, user
               else
-                cb new handler.NotAuthorizedError "Sorry, but we are in the beta phase right now, please request an invitation code first!"
+                client = db.models.Client
+                  .create
+                    client: 'spotify_app'
+                    client_id: client_id
+                    user_id: user.id
+                    active: true
+                  .done (err, client) ->
+                    cb err, user
             else 
               cb err, user
     ],

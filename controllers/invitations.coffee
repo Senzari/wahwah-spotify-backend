@@ -21,7 +21,6 @@ class Invitations
             .build
               client: 'spotify_app'
               client_id: req.query.client_id 
-        
           unless errors = client.validate()
             client
               .save()
