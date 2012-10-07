@@ -21,7 +21,7 @@ class Auth
         (cb) ->
           db.models.Client
             .find 
-              where: { client_id: req.query.client_id }
+              where: { client_id: req.query.client_id or req.params.client }
             .done cb
         (client, cb) ->
           unless client
