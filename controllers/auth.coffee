@@ -48,12 +48,14 @@ class Auth
           next err
 
   dialog: (req, resp) ->
-    resp.render('login-dialog.html');
+    # currently served as static file "/login-dialog.html"!
+    # resp.render('login-dialog.html');
+    resp.send 200
 
   login: (req, resp, next) ->
     unless req.session.client 
       req.session.client = {}
-      req.session.client.id = req.query.client_id
+      req.session.client.id = req.query.client_id or req.params.client
 
     console.log "login session:"
     console.log req.session

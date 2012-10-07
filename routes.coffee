@@ -32,10 +32,11 @@ module.exports = (app) ->
   # Routing for Users Authentification
   app.get     '/api/auth/client', Auth.client
   app.get     '/api/auth/client/:client', Auth.client
-  app.get     '/api/auth/dialog', Auth.dialog
   app.get     '/api/auth/login', Auth.login
+  app.get     '/api/auth/login/:client', Auth.login
   app.get     '/api/auth/logout', Auth.logout
   app.get     '/api/auth/callback', Auth.callback
+  app.get     '/api/auth/login/dialog', Auth.dialog
   app.get     '/api/auth/login/done', Auth.done
   app.get     '/api/auth/login/failure', Auth.failure
 
