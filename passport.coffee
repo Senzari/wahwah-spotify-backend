@@ -34,7 +34,6 @@ module.exports =
               email:        profile._json.email
               locale:       profile._json.locale
               timezone:     profile._json.timezone
-              greenhorn:    true
         else
           user.firstname    = profile.name.givenName
           user.lastname     = profile.name.familyName
