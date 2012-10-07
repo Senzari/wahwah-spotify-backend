@@ -59,6 +59,7 @@ module.exports =
 
       (user, cb) ->
         # req.query.state
+        console.log req.query.state
         if req.session.client
           client_id = req.session.client.id 
         else 

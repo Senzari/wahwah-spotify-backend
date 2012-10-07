@@ -53,11 +53,20 @@ class Auth
 
     console.log "login session:"
     console.log req.session
-    passport.authenticate('facebook', { scope: ['user_status', 'user_photos'] })(req, resp, next)
+    passport.authenticate('facebook',
+      scope: ['user_status', 'user_photos']
+      state: req.query.client_id
+      display: 'popup'
+    )(req, resp, next)
 
   logout: (req, resp, next) ->
     req.logOut() 
     resp.json message: 'see you, byebye!'
+
+  exit: (req, resp, next) ->
+    req.logOut() 
+    req.session.client = {}
+    resp.send 200
 
   callback: (req, resp, next) ->
     console.log "facebook callback"
